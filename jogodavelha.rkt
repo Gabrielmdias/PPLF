@@ -50,6 +50,8 @@
 
 (define quadrado (square 100 "outline" "black"))
 (define tela (empty-scene 300 300))
+(define tela-fim (empty-scene 300 300))
+(define (msg-fim jogador) (text jogador 25 "green"))
 
 (define (converteEntrada valor)
 	(cond
@@ -101,7 +103,7 @@
 		[(equal? (vector-ref configInicial posicao) "o") -1]
 		[(equal? (vector-ref configInicial posicao) "*") 0]))
 
-(define vencedor
+(define (vencedor w) 
 	(cond
 		[(and(and (equal? (verifica 0) 1) (equal? (verifica 1) 1)) (equal? (verifica 2) 1)) "Jogador 1 ganhou"]
 		[(and(and (equal? (verifica 3) 1) (equal? (verifica 4) 1)) (equal? (verifica 5) 1)) "Jogador 1 ganhou"]
@@ -121,8 +123,28 @@
 		[(and(and (equal? (verifica 2) -1) (equal? (verifica 5) -1)) (equal? (verifica 7) -1)) "Jogador 2 ganhou"]
 		[else "tnc"]))
 
+(define (algum-vencedor w) 
+	(cond
+		[(and(and (equal? (verifica 0) 1) (equal? (verifica 1) 1)) (equal? (verifica 2) 1))]
+		[(and(and (equal? (verifica 3) 1) (equal? (verifica 4) 1)) (equal? (verifica 5) 1))]
+		[(and(and (equal? (verifica 6) 1) (equal? (verifica 7) 1)) (equal? (verifica 8) 1))]
+		[(and(and (equal? (verifica 0) 1) (equal? (verifica 3) 1)) (equal? (verifica 6) 1))]
+		[(and(and (equal? (verifica 1) 1) (equal? (verifica 4) 1)) (equal? (verifica 7) 1))]
+		[(and(and (equal? (verifica 2) 1) (equal? (verifica 5) 1)) (equal? (verifica 8) 1))]
+		[(and(and (equal? (verifica 0) 1) (equal? (verifica 5) 1)) (equal? (verifica 8) 1))]
+		[(and(and (equal? (verifica 2) 1) (equal? (verifica 5) 1)) (equal? (verifica 7) 1))]
+		[(and(and (equal? (verifica 0) -1) (equal? (verifica 1) -1)) (equal? (verifica 2) -1))]
+		[(and(and (equal? (verifica 3) -1) (equal? (verifica 4) -1)) (equal? (verifica 5) -1))]
+		[(and(and (equal? (verifica 6) -1) (equal? (verifica 7) -1)) (equal? (verifica 8) -1))]
+		[(and(and (equal? (verifica 0) -1) (equal? (verifica 3) -1)) (equal? (verifica 6) -1))]
+		[(and(and (equal? (verifica 1) -1) (equal? (verifica 4) -1)) (equal? (verifica 7) -1))]
+		[(and(and (equal? (verifica 2) -1) (equal? (verifica 5) -1)) (equal? (verifica 8) -1))]
+		[(and(and (equal? (verifica 0) -1) (equal? (verifica 5) -1)) (equal? (verifica 8) -1))]
+		[(and(and (equal? (verifica 2) -1) (equal? (verifica 5) -1)) (equal? (verifica 7) -1))]
+		[else #f]))
+
 configInicial
-vencedor
+;;; vencedor
 
 (define listaQuadrados (list quadrado quadrado quadrado quadrado quadrado quadrado quadrado quadrado quadrado))
 (define listaPosicoes (list (make-posn 50 50) (make-posn 150 50) (make-posn 250 50)
@@ -135,8 +157,12 @@ vencedor
 	[(tabuleiro (build-list 9 (lambda (x) (converteEntrada (vector-ref configInicial x)))))]
 	(place-images (append listaQuadrados tabuleiro) (append listaPosicoes listaPosicoes) tela)))
 
+(define (fim-jogo w)
+	(place-image (msg-fim (vencedor w)) 150 150 tela-fim ))
 
 (big-bang 0
 	(name "JOGO DA VELHA")
 	(on-mouse clicar-mouse)
-	(to-draw jogo))
+	(to-draw jogo)
+	(stop-when algum-vencedor fim-jogo)
+	)
